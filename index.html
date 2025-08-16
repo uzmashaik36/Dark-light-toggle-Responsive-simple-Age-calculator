@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Animated Age Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #222;
+      --card-bg: #fff;
+      --accent: #6a5acd;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #f9f9f9;
+      --card-bg: #1e1e1e;
+      --accent: #ff8c00;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    .container {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      transition: background 0.4s ease;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 600;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 2px solid var(--accent);
+      outline: none;
+      width: 100%;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    input:focus {
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-size: 1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .result {
+      margin-top: 25px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    /* Dark/Light Toggle */
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--accent);
+      border: none;
+      padding: 10px 14px;
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.3s;
+    }
+
+    .toggle-btn:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+        border-radius: 15px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle-btn" id="toggleTheme">🌙</button>
+
+  <div class="container">
+    <h1>🎂 Age Calculator</h1>
+    <label for="dob">Select Birthday:</label>
+    <input type="date" id="dob" />
+
+    <label for="target">Select Target Date:</label>
+    <input type="date" id="target" />
+
+    <button class="btn" onclick="calculateAge()">Calculate Age</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculateAge() {
+      const dob = new Date(document.getElementById("dob").value);
+      const target = new Date(document.getElementById("target").value);
+      const result = document.getElementById("result");
+
+      if (!dob || !target || isNaN(dob) || isNaN(target)) {
+        result.innerHTML = "⚠️ Please select both dates!";
+        gsap.to(result, {opacity: 1, y: 0, duration: 0.6, ease: "back.out"});
+        return;
+      }
+
+      let years = target.getFullYear() - dob.getFullYear();
+      let months = target.getMonth() - dob.getMonth();
+      let days = target.getDate() - dob.getDate();
+
+      if (days < 0) {
+        months--;
+        days += new Date(target.getFullYear(), target.getMonth(), 0).getDate();
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      result.innerHTML = 
+        `✅ Age: <span style="color:var(--accent)">${years}</span> years, 
+        <span style="color:var(--accent)">${months}</span> months, 
+        <span style="color:var(--accent)">${days}</span> days`;
+
+      gsap.fromTo(result, 
+        {opacity: 0, y: 30}, 
+        {opacity: 1, y: 0, duration: 0.8, ease: "elastic.out(1, 0.7)"}
+      );
+    }
+
+    // Dark/Light Theme Toggle
+    const toggleBtn = document.getElementById("toggleTheme");
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      toggleBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      gsap.fromTo("body", {opacity:0.8}, {opacity:1, duration:0.5});
+    });
+  </script>
+</body>
+</html>
